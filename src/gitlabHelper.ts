@@ -8,6 +8,7 @@ import {
 } from '@gitbeaker/core/dist/types/types';
 import { GitlabSettings } from './settings';
 import axios from 'axios';
+import * as path from 'path';
 
 export type GitLabIssue = IssueSchema;
 export type GitLabNote = NoteSchema;
@@ -116,7 +117,10 @@ export class GitlabHelper {
    */
   async getAttachment(relurl: string) {
     try {
-      const attachmentUrl = this.host + '/' + this.projectPath + relurl;
+      const basefilename = path.basename(relurl);
+      const urlencodedName = encodeURI(basefilename);
+      const urlencodedUrl = relurl.replace(basefilename,urlencodedName);
+      const attachmentUrl = this.host + '/' + this.projectPath + urlencodedUrl;
       const data = (
         await axios.get(attachmentUrl, {
           responseType: 'arraybuffer',
